@@ -81,108 +81,108 @@
 </div>
 
 <script>
-    /* 🎁 Персональные поздравления */
-    const messages = {
-        mama: {
-            title: "💖 Дорогая мама!",
-            text: "С Новым годом! Пусть дом всегда будет наполнен теплом, уютом и счастьем 💐"
-        },
-        papa: {
-            title: "💪 Дорогой папа!",
-            text: "С Новым годом! Здоровья, сил и уверенности в каждом дне 🎄"
-        },
-        andrey: {
-            title: "😎 Андрей!",
-            text: "С Новым годом! Пусть впереди будет много классных моментов и побед 🎉"
-        },
-        dima: {
-            title: "🔥 Дима!",
-            text: "С Новым годом! Пусть год будет ярким, весёлым и удачным ✨"
-        },
-        tanya: {
-            title: "🌸 Таня!",
-            text: "С Новым годом! Пусть каждый день будет наполнен радостью и улыбками ❄️"
-        },
-        danik: {
-            title: "🚀 Даник!",
-            text: "С Новым годом! Пусть сбываются желания и каждый день будет приключением 🎁"
-        },
-        grandma: {
-            title: "💐 Дорогая бабушка!",
-            text: "С Новым годом! Крепкого здоровья, уюта и тепла в каждом дне ❤️"
-        },
-        grandpa: {
-            title: "🧡 Дорогой дедушка!",
-            text: "С Новым годом! Здоровья, бодрости и отличного настроения 🎄"
-        }
-    };
+/* 🎁 Персональные поздравления */
+const messages = {
+    mama: {title:"💖 Дорогая мама!", text:"С Новым годом! Пусть дом всегда будет наполнен теплом, уютом и счастьем 💐"},
+    papa: {title:"💪 Дорогой папа!", text:"С Новым годом! Здоровья, сил и уверенности в каждом дне 🎄"},
+    andrey: {title:"😎 Андрей!", text:"С Новым годом! Пусть впереди будет много классных моментов и побед 🎉"},
+    dima: {title:"🔥 Дима!", text:"С Новым годом! Пусть год будет ярким, весёлым и удачным ✨"},
+    tanya: {title:"🌸 Таня!", text:"С Новым годом! Пусть каждый день будет наполнен радостью и улыбками ❄️"},
+    danik: {title:"🚀 Даник!", text:"С Новым годом! Пусть сбываются желания и каждый день будет приключением 🎁"},
+    grandma: {title:"💐 Дорогая бабушка!", text:"С Новым годом! Крепкого здоровья, уюта и тепла в каждом дне ❤️"},
+    grandpa: {title:"🧡 Дорогой дедушка!", text:"С Новым годом! Здоровья, бодрости и отличного настроения 🎄"}
+};
 
-    const params = new URLSearchParams(window.location.search);
-    const name = params.get("name");
+const params = new URLSearchParams(window.location.search);
+const name = params.get("name");
 
-    if (name && messages[name]) {
-        document.getElementById("title").textContent = messages[name].title;
-        document.getElementById("message").textContent = messages[name].text;
+if(name && messages[name]){
+    document.getElementById("title").textContent = messages[name].title;
+    document.getElementById("message").textContent = messages[name].text;
+}
+
+/* ❄️ Снежинки */
+for(let i=0;i<50;i++){
+    const s=document.createElement("div");
+    s.className="snowflake";
+    s.textContent="❄";
+    s.style.left=Math.random()*100+"vw";
+    s.style.fontSize=Math.random()*20+10+"px";
+    s.style.animationDuration=Math.random()*5+5+"s";
+    s.style.animationDelay=Math.random()*5+"s";
+    document.body.appendChild(s);
+}
+
+/* 🎆 Canvas для конфетти */
+const canvas = document.getElementById("confetti");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+class Particle {
+    constructor(x, y, color, dx, dy, radius){
+        Object.assign(this,{x, y, color, dx, dy, radius});
     }
-
-    /* ❄️ Снежинки */
-    for (let i = 0; i < 50; i++) {
-        const snowflake = document.createElement("div");
-        snowflake.className = "snowflake";
-        snowflake.textContent = "❄";
-        snowflake.style.left = Math.random() * 100 + "vw";
-        snowflake.style.fontSize = Math.random() * 20 + 10 + "px";
-        snowflake.style.animationDuration = Math.random() * 5 + 5 + "s";
-        snowflake.style.animationDelay = Math.random() * 5 + "s";
-        document.body.appendChild(snowflake);
+    update(){
+        this.x += this.dx;
+        this.y += this.dy;
+        this.dy += 0.05; // гравитация
+        if(this.y > canvas.height) this.y = -10;
     }
-
-    /* 🎆 Салют (confetti) */
-    const canvas = document.getElementById("confetti");
-    const ctx = canvas.getContext("2d");
-
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    const confetti = [];
-
-    function createConfetti() {
-        for (let i = 0; i < 150; i++) {
-            confetti.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height - canvas.height,
-                r: Math.random() * 6 + 4,
-                d: Math.random() * 50,
-                color: `hsl(${Math.random() * 360}, 100%, 70%)`,
-                tilt: Math.random() * 10 - 10
-            });
-        }
+    draw(){
+        ctx.beginPath();
+        ctx.fillStyle = this.color;
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
+        ctx.fill();
     }
+}
 
-    function drawConfetti() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        confetti.forEach(c => {
-            ctx.beginPath();
-            ctx.fillStyle = c.color;
-            ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
-            ctx.fill();
-        });
-        updateConfetti();
+let confetti = [];
+
+// ❇ Функция «взрыва» конфетти из центра
+function burstConfetti(){
+    const centerX = canvas.width/2;
+    const centerY = canvas.height/2;
+    for(let i=0;i<200;i++){
+        const angle = Math.random()*2*Math.PI;
+        const speed = Math.random()*8 + 2;
+        confetti.push(new Particle(
+            centerX,
+            centerY,
+            `hsl(${Math.random()*360},100%,70%)`,
+            Math.cos(angle)*speed,
+            Math.sin(angle)*speed,
+            Math.random()*6+3
+        ));
     }
+}
 
-    function updateConfetti() {
-        confetti.forEach(c => {
-            c.y += Math.cos(c.d) + 2;
-            c.x += Math.sin(c.d);
-            if (c.y > canvas.height) c.y = -10;
-        });
+// ❇ Обычный дождик конфетти
+function createRain(){
+    for(let i=0;i<100;i++){
+        confetti.push(new Particle(
+            Math.random()*canvas.width,
+            Math.random()*canvas.height- canvas.height,
+            `hsl(${Math.random()*360},100%,70%)`,
+            Math.random()*2-1,
+            Math.random()*-4-1,
+            Math.random()*4+2
+        ));
     }
+}
 
-    createConfetti();
-    setTimeout(() => {
-        setInterval(drawConfetti, 20);
-    }, 300);
+// ❇ Анимация
+function animate(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    confetti.forEach(p=>{ p.update(); p.draw(); });
+    requestAnimationFrame(animate);
+}
+
+burstConfetti();   // Взрыв при загрузке
+animate();
+setTimeout(()=>{ createRain(); }, 800); // Через 0.8 сек лёгкий дождик
 </script>
+
 
 </body>
 </html>
