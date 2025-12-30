@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <title>Новогоднее поздравление 🎄</title>
-
 <style>
 body {
     margin: 0;
@@ -55,7 +54,7 @@ button {
 
 @keyframes fall {
     from { transform: translateY(0); opacity: 1; }
-    to { transform: translateY(110vh); opacity: 0.3; }
+    to   { transform: translateY(110vh); opacity: 0.3; }
 }
 
 /* 🎆 Canvas */
@@ -67,7 +66,6 @@ canvas {
 }
 </style>
 </head>
-
 <body>
 
 <canvas id="confetti"></canvas>
@@ -80,14 +78,12 @@ canvas {
 
 <div class="card">
     <h1>🎁 Чей это подарок?</h1>
-
     <div id="form">
         <input id="nameInput" placeholder="Введи своё имя">
         <br>
         <button onclick="checkName()">Проверить</button>
         <p id="error" style="color:#ffb3b3;"></p>
     </div>
-
     <div id="greeting" class="hidden">
         <h1 id="title">🎄 С Новым годом!</h1>
         <p id="message"></p>
@@ -131,24 +127,22 @@ canvas.height = innerHeight;
 
 class Particle {
     constructor(x, y, color, dx, dy, r) {
-        this.x = x;
-        this.y = y;
+        this.x = x; this.y = y;
         this.color = color;
-        this.dx = dx;
-        this.dy = dy;
+        this.dx = dx; this.dy = dy;
         this.r = r;
-        this.life = 200; // увеличенное время жизни
+        this.life = 200;
     }
     update() {
         this.x += this.dx;
         this.y += this.dy;
         this.life--;
-        this.r *= 0.995; // медленное уменьшение радиуса
+        this.r *= 0.995;
     }
     draw() {
         ctx.beginPath();
         ctx.fillStyle = this.color;
-        ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+        ctx.arc(this.x, this.y, this.r, 0, Math.PI*2);
         ctx.fill();
     }
 }
@@ -156,17 +150,17 @@ class Particle {
 let confetti = [];
 
 function burstConfetti() {
-    const cx = canvas.width / 2;
-    const cy = canvas.height / 2;
+    const cx = canvas.width/2;
+    const cy = canvas.height/2;
     for (let i = 0; i < 200; i++) {
-        const a = Math.random() * Math.PI * 2;
+        const a = Math.random() * Math.PI*2;
         const speed = Math.random() * 4 + 1;
         confetti.push(new Particle(
             cx, cy,
-            `hsl(${Math.random() * 360},100%,70%)`,
-            Math.cos(a) * speed,
-            Math.sin(a) * speed,
-            Math.random() * 5 + 3
+            `hsl(${Math.random()*360},100%,70%)`,
+            Math.cos(a)*speed,
+            Math.sin(a)*speed,
+            Math.random()*5 + 3
         ));
     }
     animateConfetti();
@@ -199,21 +193,25 @@ function checkName() {
     document.getElementById("greeting").classList.remove("hidden");
     document.getElementById("message").textContent = greetings[input] || "🎄 С Новым годом!";
 
-    // 🔊 тройной салют
-    firework.currentTime = 0;
-    firework.play();
-    burstConfetti();
-    setTimeout(() => { firework.currentTime = 0; firework.play(); burstConfetti(); }, 500);
-    setTimeout(() => { firework.currentTime = 0; firework.play(); burstConfetti(); }, 1000);
+    // 🔊 тройной салют с звуком
+    const playFirework = () => { firework.currentTime=0; firework.play(); burstConfetti(); };
+    playFirework();
+    setTimeout(playFirework, 500);
+    setTimeout(playFirework, 1000);
 
-    // 🎶 музыка после салюта
-    setTimeout(() => { music.currentTime = 0; music.play(); }, 2000);
+    // 🎶 музыка уже играет, не перезапускаем
 }
 
-// 🎶 автоматический запуск музыки при открытии страницы
+// 🎶 запуск музыки при первом взаимодействии
 window.addEventListener("DOMContentLoaded", () => {
     const music = document.getElementById("christmasMusic");
-    music.play().catch(() => {});
+    const startMusic = () => {
+        music.play().catch(() => {});
+        document.removeEventListener("click", startMusic);
+        document.removeEventListener("keydown", startMusic);
+    };
+    document.addEventListener("click", startMusic);
+    document.addEventListener("keydown", startMusic);
 });
 </script>
 
