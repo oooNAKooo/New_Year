@@ -75,7 +75,6 @@ canvas {
 <!-- аудио взрыва -->
 <audio id="fireworkSound" src="https://raw.githubusercontent.com/oooNAKooo/New_Year/main/mixkit-fireworks-bang-in-sky-2989.wav" preload="auto"></audio>
 
-
 <div class="card">
     <h1>🎁 Чей это подарок?</h1>
 
@@ -95,13 +94,13 @@ canvas {
 
 <script>
 // ❄️ снег
-for(let i=0;i<50;i++){
-    const s=document.createElement("div");
-    s.className="snowflake";
-    s.textContent="❄";
-    s.style.left=Math.random()*100+"vw";
-    s.style.fontSize=Math.random()*18+10+"px";
-    s.style.animationDuration=Math.random()*10+15+"s";
+for (let i = 0; i < 50; i++) {
+    const s = document.createElement("div");
+    s.className = "snowflake";
+    s.textContent = "❄";
+    s.style.left = Math.random() * 100 + "vw";
+    s.style.fontSize = Math.random() * 18 + 10 + "px";
+    s.style.animationDuration = Math.random() * 10 + 15 + "s";
     document.body.appendChild(s);
 }
 
@@ -128,64 +127,66 @@ canvas.width = innerWidth;
 canvas.height = innerHeight;
 
 class Particle {
-    constructor(x,y,color,dx,dy,r){
+    constructor(x, y, color, dx, dy, r) {
         this.x = x;
         this.y = y;
         this.color = color;
         this.dx = dx;
         this.dy = dy;
         this.r = r;
-        this.life = 200;  // ⬅ увеличиваем в 2.5 раза
+        this.life = 200;      // увеличенное время жизни
     }
-    update(){
+    update() {
         this.x += this.dx;
         this.y += this.dy;
         this.life--;
-        this.r *= 0.995;  // ⬅ медленнее уменьшаем радиус
+        this.r *= 0.995;      // медленное уменьшение радиуса
     }
-    draw(){
+    draw() {
         ctx.beginPath();
         ctx.fillStyle = this.color;
-        ctx.arc(this.x, this.y, this.r, 0, Math.PI*2);
+        ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
         ctx.fill();
     }
 }
 
-function burstConfetti(){
-    const cx = canvas.width/2;
-    const cy = canvas.height/2;
-    for(let i=0; i<200; i++){
-        const a = Math.random()*Math.PI*2;
-        const speed = Math.random()*4+1;
+let confetti = [];
+
+function burstConfetti() {
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+    for (let i = 0; i < 200; i++) {
+        const a = Math.random() * Math.PI * 2;
+        const speed = Math.random() * 4 + 1;
         confetti.push(new Particle(
             cx, cy,
-            `hsl(${Math.random()*360},100%,70%)`,
-            Math.cos(a)*speed,
-            Math.sin(a)*speed,
-            Math.random()*5+3
+            `hsl(${Math.random() * 360},100%,70%)`,
+            Math.cos(a) * speed,
+            Math.sin(a) * speed,
+            Math.random() * 5 + 3
         ));
     }
     animateConfetti();
 }
 
-function animateConfetti(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    confetti.forEach(p=>{ p.update(); p.draw(); });
-    confetti = confetti.filter(p => p.life>0);
-    if(confetti.length>0) requestAnimationFrame(animateConfetti);
+function animateConfetti() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    confetti.forEach(p => { p.update(); p.draw(); });
+    confetti = confetti.filter(p => p.life > 0);
+    if (confetti.length > 0) requestAnimationFrame(animateConfetti);
 }
 
 // ✅ проверка имени и салют + аудио
-function checkName(){
+function checkName() {
     const input = document.getElementById("nameInput").value.trim().toLowerCase();
     const error = document.getElementById("error");
 
-    if(!correctName){
+    if (!correctName) {
         error.textContent = "⚠️ Ошибка ссылки (QR-код повреждён)";
         return;
     }
 
-    if(input !== correctName){
+    if (input !== correctName) {
         error.textContent = "❌ Этот подарок предназначен другому человеку";
         return;
     }
@@ -195,12 +196,11 @@ function checkName(){
     document.getElementById("message").textContent = greetings[input] || "🎄 С Новым годом!";
 
     // 🔊 звук салюта
-    
     const sound = document.getElementById("fireworkSound");
     sound.currentTime = 0;
     sound.play();
 
-    // 🎆 тройной салют с небольшим интервалом
+    // 🎆 тройной салют с интервалом
     burstConfetti();
     setTimeout(burstConfetti, 500);
     setTimeout(burstConfetti, 1000);
