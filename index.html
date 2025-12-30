@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Новогодний подарок 🎄</title>
+<title>Новогоднее поздравление 🎄</title>
 
 <style>
 body {
@@ -27,27 +27,21 @@ body {
     z-index: 2;
 }
 
-input {
-    padding: 14px;
+input, button {
+    padding: 12px;
     font-size: 18px;
-    border-radius: 12px;
+    border-radius: 10px;
     border: none;
-    width: 80%;
-    margin-bottom: 15px;
+    margin-top: 10px;
 }
 
 button {
-    padding: 14px 30px;
-    font-size: 18px;
-    border-radius: 14px;
-    border: none;
     cursor: pointer;
+    background: #00c6ff;
+    color: #000;
 }
 
-.year {
-    margin-top: 20px;
-    opacity: 0.8;
-}
+.hidden { display: none; }
 
 /* ❄️ СНЕГ */
 .snowflake {
@@ -63,75 +57,30 @@ button {
     from { transform: translateY(0); opacity: 1; }
     to   { transform: translateY(110vh); opacity: 0.3; }
 }
-
-/* 🎆 Canvas */
-canvas {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-}
 </style>
 </head>
 
 <body>
 
-<canvas id="confetti"></canvas>
+<div class="card">
+    <h1>🎁 Чей это подарок?</h1>
 
-<!-- 🔐 Ввод имени -->
-<div class="card" id="auth">
-    <h1>🎁 Введите своё имя</h1>
-    <input id="nameInput" placeholder="Например: Мама">
-    <br>
-    <button onclick="checkName()">Открыть подарок ✨</button>
-    <p id="error" style="color:#ffb3b3;margin-top:15px;"></p>
-</div>
+    <div id="form">
+        <input id="nameInput" placeholder="Введи своё имя">
+        <br>
+        <button onclick="checkName()">Проверить</button>
+        <p id="error" style="color:#ffb3b3;"></p>
+    </div>
 
-<!-- 🎉 Поздравление -->
-<div class="card" id="gift" style="display:none;">
-    <h1 id="title"></h1>
-    <p id="message"></p>
-    <div class="year">❄️ 2026 ❄️</div>
+    <div id="greeting" class="hidden">
+        <h1>🎄 С Новым годом!</h1>
+        <p id="message"></p>
+        <div>❄️ 2026 ❄️</div>
+    </div>
 </div>
 
 <script>
-/* 🎁 СПИСОК ПОЛУЧАТЕЛЕЙ */
-const gifts = {
-    мама: { title:"💖 Дорогая мама!", text:"С Новым годом! Пусть дом будет полон уюта и тепла 💐" },
-    папа: { title:"💪 Дорогой папа!", text:"С Новым годом! Здоровья и сил 🎄" },
-    андрей: { title:"😎 Андрей!", text:"С Новым годом! Удачи и побед 🎉" },
-    дима: { title:"🔥 Дима!", text:"С Новым годом! Яркого года ✨" },
-    таня: { title:"🌸 Таня!", text:"С Новым годом! Радости и улыбок ❄️" },
-    даник: { title:"🚀 Даник!", text:"С Новым годом! Пусть мечты сбываются 🎁" },
-    бабушка: { title:"💐 Дорогая бабушка!", text:"С Новым годом! Здоровья и тепла ❤️" },
-    дедушка: { title:"🧡 Дорогой дедушка!", text:"С Новым годом! Отличного настроения 🎄" }
-};
-
-/* 🔍 ПРОВЕРКА ИМЕНИ */
-function checkName(){
-    const name = document.getElementById("nameInput").value.trim().toLowerCase();
-    const error = document.getElementById("error");
-
-    if(!name){
-        error.textContent = "Введите имя 🙂";
-        return;
-    }
-
-    if(!gifts[name]){
-        error.textContent = "❌ Этот подарок не для тебя";
-        return;
-    }
-
-    document.getElementById("auth").style.display = "none";
-    document.getElementById("gift").style.display = "block";
-
-    document.getElementById("title").textContent = gifts[name].title;
-    document.getElementById("message").textContent = gifts[name].text;
-
-    burstConfetti();
-}
-
-/* ❄️ СНЕГ */
+// ❄️ снег
 for(let i=0;i<50;i++){
     const s=document.createElement("div");
     s.className="snowflake";
@@ -139,62 +88,32 @@ for(let i=0;i<50;i++){
     s.style.left=Math.random()*100+"vw";
     s.style.fontSize=Math.random()*18+10+"px";
     s.style.animationDuration=Math.random()*10+15+"s";
-    s.style.animationDelay=Math.random()*10+"s";
     document.body.appendChild(s);
 }
 
-/* 🎆 ФЕЙЕРВЕРК — ОДИН ВЗРЫВ */
-const canvas = document.getElementById("confetti");
-const ctx = canvas.getContext("2d");
-canvas.width = innerWidth;
-canvas.height = innerHeight;
+// 🎯 получаем имя из QR
+const params = new URLSearchParams(window.location.search);
+const correctName = params.get("for")?.toLowerCase();
 
-class Particle {
-    constructor(x,y,color,dx,dy,r){
-        this.x=x; this.y=y;
-        this.color=color;
-        this.dx=dx; this.dy=dy;
-        this.r=r;
-        this.life=80;
-    }
-    update(){
-        this.x += this.dx;
-        this.y += this.dy;
-        this.life--;
-        this.r *= 0.97;
-    }
-    draw(){
-        ctx.beginPath();
-        ctx.fillStyle=this.color;
-        ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
-        ctx.fill();
-    }
-}
+// 🎁 персональные поздравления
+const greetings = {
+    mama: "Дорогая мама 💖 Спасибо за тепло, заботу и любовь!",
+    papa: "Папа 💪 Пусть Новый год принесёт радость и здоровье!",
+    anna: "Аня ✨ Пусть все мечты сбудутся в новом году!"
+};
 
-let confetti=[];
+function checkName(){
+    const input = document.getElementById("nameInput").value.trim().toLowerCase();
+    const error = document.getElementById("error");
 
-function burstConfetti(){
-    const cx=canvas.width/2;
-    const cy=canvas.height/2;
-    for(let i=0;i<200;i++){
-        const a=Math.random()*Math.PI*2;
-        const speed=Math.random()*4+1;
-        confetti.push(new Particle(
-            cx, cy,
-            `hsl(${Math.random()*360},100%,70%)`,
-            Math.cos(a)*speed,
-            Math.sin(a)*speed,
-            Math.random()*5+3
-        ));
+    if(input !== correctName){
+        error.textContent = "❌ Этот подарок предназначен другому человеку";
+        return;
     }
-    animate();
-}
 
-function animate(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    confetti.forEach(p=>{ p.update(); p.draw(); });
-    confetti = confetti.filter(p => p.life > 0);
-    if(confetti.length) requestAnimationFrame(animate);
+    document.getElementById("form").classList.add("hidden");
+    document.getElementById("greeting").classList.remove("hidden");
+    document.getElementById("message").textContent = greetings[input] || "С Новым годом! 🎄";
 }
 </script>
 
