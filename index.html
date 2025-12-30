@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Новогоднее поздравление 🎄</title>
+<title>Новогодний подарок 🎄</title>
 
 <style>
 body {
@@ -27,16 +27,29 @@ body {
     z-index: 2;
 }
 
-h1 { font-size: 32px; margin-bottom: 15px; }
-p { font-size: 20px; line-height: 1.5; }
+input {
+    padding: 14px;
+    font-size: 18px;
+    border-radius: 12px;
+    border: none;
+    width: 80%;
+    margin-bottom: 15px;
+}
+
+button {
+    padding: 14px 30px;
+    font-size: 18px;
+    border-radius: 14px;
+    border: none;
+    cursor: pointer;
+}
 
 .year {
     margin-top: 20px;
-    font-size: 18px;
     opacity: 0.8;
 }
 
-/* ❄️ Снежинки */
+/* ❄️ СНЕГ */
 .snowflake {
     position: fixed;
     top: -10px;
@@ -65,14 +78,60 @@ canvas {
 
 <canvas id="confetti"></canvas>
 
-<div class="card">
-    <h1 id="title">🎄 С Новым годом!</h1>
-    <p id="message">Пусть этот праздник принесёт радость и тепло ✨</p>
+<!-- 🔐 Ввод имени -->
+<div class="card" id="auth">
+    <h1>🎁 Введите своё имя</h1>
+    <input id="nameInput" placeholder="Например: Мама">
+    <br>
+    <button onclick="checkName()">Открыть подарок ✨</button>
+    <p id="error" style="color:#ffb3b3;margin-top:15px;"></p>
+</div>
+
+<!-- 🎉 Поздравление -->
+<div class="card" id="gift" style="display:none;">
+    <h1 id="title"></h1>
+    <p id="message"></p>
     <div class="year">❄️ 2026 ❄️</div>
 </div>
 
 <script>
-/* ❄️ СНЕГ — ТОЛЬКО СНЕГ ПАДАЕТ */
+/* 🎁 СПИСОК ПОЛУЧАТЕЛЕЙ */
+const gifts = {
+    мама: { title:"💖 Дорогая мама!", text:"С Новым годом! Пусть дом будет полон уюта и тепла 💐" },
+    папа: { title:"💪 Дорогой папа!", text:"С Новым годом! Здоровья и сил 🎄" },
+    андрей: { title:"😎 Андрей!", text:"С Новым годом! Удачи и побед 🎉" },
+    дима: { title:"🔥 Дима!", text:"С Новым годом! Яркого года ✨" },
+    таня: { title:"🌸 Таня!", text:"С Новым годом! Радости и улыбок ❄️" },
+    даник: { title:"🚀 Даник!", text:"С Новым годом! Пусть мечты сбываются 🎁" },
+    бабушка: { title:"💐 Дорогая бабушка!", text:"С Новым годом! Здоровья и тепла ❤️" },
+    дедушка: { title:"🧡 Дорогой дедушка!", text:"С Новым годом! Отличного настроения 🎄" }
+};
+
+/* 🔍 ПРОВЕРКА ИМЕНИ */
+function checkName(){
+    const name = document.getElementById("nameInput").value.trim().toLowerCase();
+    const error = document.getElementById("error");
+
+    if(!name){
+        error.textContent = "Введите имя 🙂";
+        return;
+    }
+
+    if(!gifts[name]){
+        error.textContent = "❌ Этот подарок не для тебя";
+        return;
+    }
+
+    document.getElementById("auth").style.display = "none";
+    document.getElementById("gift").style.display = "block";
+
+    document.getElementById("title").textContent = gifts[name].title;
+    document.getElementById("message").textContent = gifts[name].text;
+
+    burstConfetti();
+}
+
+/* ❄️ СНЕГ */
 for(let i=0;i<50;i++){
     const s=document.createElement("div");
     s.className="snowflake";
@@ -84,7 +143,7 @@ for(let i=0;i<50;i++){
     document.body.appendChild(s);
 }
 
-/* 🎆 ФЕЙЕРВЕРК — ТОЛЬКО ВЗРЫВ */
+/* 🎆 ФЕЙЕРВЕРК — ОДИН ВЗРЫВ */
 const canvas = document.getElementById("confetti");
 const ctx = canvas.getContext("2d");
 canvas.width = innerWidth;
@@ -96,13 +155,13 @@ class Particle {
         this.color=color;
         this.dx=dx; this.dy=dy;
         this.r=r;
-        this.life=80; // ⬅ время жизни
+        this.life=80;
     }
     update(){
         this.x += this.dx;
         this.y += this.dy;
         this.life--;
-        this.r *= 0.98; // ⬅ плавное исчезновение
+        this.r *= 0.97;
     }
     draw(){
         ctx.beginPath();
@@ -135,16 +194,8 @@ function animate(){
     ctx.clearRect(0,0,canvas.width,canvas.height);
     confetti.forEach(p=>{ p.update(); p.draw(); });
     confetti = confetti.filter(p => p.life > 0);
-
-    if(confetti.length > 0){
-        requestAnimationFrame(animate);
-    } else {
-        ctx.clearRect(0,0,canvas.width,canvas.height); // чистим холст
-    }
+    if(confetti.length) requestAnimationFrame(animate);
 }
-
-/* 🎉 ВЗРЫВ ТОЛЬКО ОДИН РАЗ */
-burstConfetti();
 </script>
 
 </body>
