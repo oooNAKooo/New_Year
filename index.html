@@ -91,11 +91,11 @@ for(let i=0;i<50;i++){
     document.body.appendChild(s);
 }
 
-// 🎯 имя из QR (?name=...)
+// имя из QR (?name=...)
 const params = new URLSearchParams(window.location.search);
 const correctName = params.get("name")?.toLowerCase();
 
-// 🎁 поздравления
+// поздравления
 const greetings = {
     "алла":   "💐 Алла, с Новым годом! Пусть в жизни будет больше радости и уюта ✨",
     "валера": "🎄 Валера, с Новым годом! Здоровья, удачи и отличного настроения 💪",
@@ -107,16 +107,11 @@ const greetings = {
     "дима":   "⚡ Дима, с Новым годом! Пусть всё задуманное получится ✨"
 };
 
-// 🎆 canvas
-const canvas = document.createElement("canvas");
-document.body.appendChild(canvas);
+// 🎆 canvas для салюта
+const canvas = document.getElementById("confetti");
 const ctx = canvas.getContext("2d");
-canvas.style.position = "fixed";
-canvas.style.inset = "0";
-canvas.style.pointerEvents = "none";
-canvas.style.zIndex = "0";
-canvas.width = innerWidth;
-canvas.height = innerHeight;
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
 class Particle {
     constructor(x,y,color,dx,dy,r){
@@ -134,7 +129,7 @@ class Particle {
     }
     draw(){
         ctx.beginPath();
-        ctx.fillStyle = this.color;
+        ctx.fillStyle=this.color;
         ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
         ctx.fill();
     }
@@ -142,7 +137,7 @@ class Particle {
 
 let particles=[];
 
-// анимация всегда работает
+// анимация постоянно работает
 function animate(){
     ctx.clearRect(0,0,canvas.width,canvas.height);
     particles.forEach(p=>{p.update(); p.draw();});
@@ -151,10 +146,10 @@ function animate(){
 }
 animate();
 
-// функция взрыва в точке
+// функция взрыва
 function burst(x,y){
     for(let i=0;i<180;i++){
-        const a=Math.random()*Math.PI*2;
+        const a=Math.random()*2*Math.PI;
         const speed=Math.random()*4+2;
         particles.push(new Particle(
             x, y,
@@ -170,10 +165,9 @@ function burst(x,y){
 function tripleFirework(){
     const cx = canvas.width/2;
     const cy = canvas.height/2;
-
     burst(cx, cy);
-    setTimeout(()=>burst(cx - 150, cy), 600);
-    setTimeout(()=>burst(cx + 150, cy), 1200);
+    setTimeout(()=>burst(cx-150, cy), 600);
+    setTimeout(()=>burst(cx+150, cy), 1200);
 }
 
 // проверка имени
@@ -196,7 +190,15 @@ function checkName(){
 
     tripleFirework();
 }
+
+// добавить Enter для input
+document.getElementById("nameInput").addEventListener("keydown", function(e){
+    if(e.key === "Enter"){
+        checkName();
+    }
+});
 </script>
+
 
 </body>
 </html>
