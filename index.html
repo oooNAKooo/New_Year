@@ -72,19 +72,19 @@ canvas {
 </div>
 
 <script>
-/* ❄️ СНЕГ — МЕДЛЕННЕЕ */
+/* ❄️ СНЕГ — ТОЛЬКО СНЕГ ПАДАЕТ */
 for(let i=0;i<50;i++){
     const s=document.createElement("div");
     s.className="snowflake";
     s.textContent="❄";
     s.style.left=Math.random()*100+"vw";
     s.style.fontSize=Math.random()*18+10+"px";
-    s.style.animationDuration=Math.random()*10+15+"s"; // ⬅ медленнее
+    s.style.animationDuration=Math.random()*10+15+"s";
     s.style.animationDelay=Math.random()*10+"s";
     document.body.appendChild(s);
 }
 
-/* 🎆 КОНФЕТТИ */
+/* 🎆 ФЕЙЕРВЕРК — ТОЛЬКО ВЗРЫВ */
 const canvas = document.getElementById("confetti");
 const ctx = canvas.getContext("2d");
 canvas.width = innerWidth;
@@ -92,12 +92,17 @@ canvas.height = innerHeight;
 
 class Particle {
     constructor(x,y,color,dx,dy,r){
-        Object.assign(this,{x,y,color,dx,dy,r});
+        this.x=x; this.y=y;
+        this.color=color;
+        this.dx=dx; this.dy=dy;
+        this.r=r;
+        this.life=80; // ⬅ время жизни
     }
     update(){
         this.x += this.dx;
         this.y += this.dy;
-        this.dy += 0.01; // ⬅ очень слабая гравитация
+        this.life--;
+        this.r *= 0.98; // ⬅ плавное исчезновение
     }
     draw(){
         ctx.beginPath();
@@ -114,7 +119,7 @@ function burstConfetti(){
     const cy=canvas.height/2;
     for(let i=0;i<200;i++){
         const a=Math.random()*Math.PI*2;
-        const speed=Math.random()*4+1; // ⬅ меньше начальная скорость
+        const speed=Math.random()*4+1;
         confetti.push(new Particle(
             cx, cy,
             `hsl(${Math.random()*360},100%,70%)`,
@@ -123,16 +128,23 @@ function burstConfetti(){
             Math.random()*5+3
         ));
     }
+    animate();
 }
 
 function animate(){
     ctx.clearRect(0,0,canvas.width,canvas.height);
-    confetti.forEach(p=>{p.update();p.draw();});
-    requestAnimationFrame(animate);
+    confetti.forEach(p=>{ p.update(); p.draw(); });
+    confetti = confetti.filter(p => p.life > 0);
+
+    if(confetti.length > 0){
+        requestAnimationFrame(animate);
+    } else {
+        ctx.clearRect(0,0,canvas.width,canvas.height); // чистим холст
+    }
 }
 
+/* 🎉 ВЗРЫВ ТОЛЬКО ОДИН РАЗ */
 burstConfetti();
-animate();
 </script>
 
 </body>
