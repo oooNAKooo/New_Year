@@ -77,7 +77,7 @@ canvas {
 <audio id="christmasMusic" src="https://raw.githubusercontent.com/oooNAKooo/New_Year/main/christmas.mp3" preload="auto" loop></audio>
 
 <div class="card">
-    <h1>🎁 Чей это подарок?</h1>
+    <h1 id="title">🎁 Чей это подарок?</h1>
     <div id="form">
         <input id="nameInput" placeholder="Введи своё имя">
         <br>
@@ -85,7 +85,6 @@ canvas {
         <p id="error" style="color:#ffb3b3;"></p>
     </div>
     <div id="greeting" class="hidden">
-        <h1 id="title">🎄 С Новым годом!</h1>
         <p id="message"></p>
         <div>❄️ 2026 ❄️</div>
     </div>
@@ -103,11 +102,11 @@ for (let i = 0; i < 50; i++) {
     document.body.appendChild(s);
 }
 
-// 🎯 имя из QR (?name=...)
+// имя из QR (?name=...)
 const params = new URLSearchParams(window.location.search);
 const correctName = params.get("name")?.toLowerCase();
 
-// 🎁 поздравления
+// поздравления
 const greetings = {
     "алла":   "💐 Дорогая бабушка, с Новым годом! Пусть в жизни будет больше радости и уюта ✨ Этот подарок специально для тебя!",
     "валера": "🎄 Дорогой дедушка, с Новым годом! Здоровья, удачи и отличного настроения 💪 Этот подарок специально для тебя!",
@@ -119,7 +118,7 @@ const greetings = {
     "дима":   "⚡ Дорогой Дима, с Новым годом! Пусть всё задуманное получится ✨ Этот подарок специально для тебя!"
 };
 
-// 🎆 Canvas для конфетти
+// Canvas для конфетти
 const canvas = document.getElementById("confetti");
 const ctx = canvas.getContext("2d");
 canvas.width = innerWidth;
@@ -173,7 +172,7 @@ function animateConfetti() {
     if (confetti.length > 0) requestAnimationFrame(animateConfetti);
 }
 
-// ✅ проверка имени и салют + аудио
+// проверка имени и запуск салюта + музыки
 function checkName() {
     const input = document.getElementById("nameInput").value.trim().toLowerCase();
     const error = document.getElementById("error");
@@ -189,20 +188,23 @@ function checkName() {
         return;
     }
 
+    // Скрываем форму полностью и изменяем заголовок
     document.getElementById("form").classList.add("hidden");
+    document.getElementById("title").textContent = "🎄 С Новым годом!";
     document.getElementById("greeting").classList.remove("hidden");
     document.getElementById("message").textContent = greetings[input] || "🎄 С Новым годом!";
 
-    // 🔊 тройной салют с звуком
-    const playFirework = () => { firework.currentTime=0; firework.play(); burstConfetti(); };
+    // Старт музыки, если ещё не играет
+    if (music.paused) music.play().catch(() => {});
+
+    // Тройной салют
+    const playFirework = () => { firework.currentTime=0; burstConfetti(); };
     playFirework();
     setTimeout(playFirework, 500);
     setTimeout(playFirework, 1000);
-
-    // 🎶 музыка уже играет, не перезапускаем
 }
 
-// 🎶 запуск музыки при первом взаимодействии
+// старт музыки после первого клика (браузер требует взаимодействие)
 window.addEventListener("DOMContentLoaded", () => {
     const music = document.getElementById("christmasMusic");
     const startMusic = () => {
